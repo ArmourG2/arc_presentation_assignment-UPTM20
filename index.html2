@@ -8,20 +8,23 @@
 </head>
 <body>
   <!-- Header -->
-<div class="header-container">
+  <div class="header-container">
     <div class="logo"><a href="index.html">Mal Tech Store</a></div>
     <div class="search-bar">
-        <form onsubmit="return false;">
-            <input type="text" id="search-input" class="search-input" placeholder="Search parts...">
-            <button type="submit" class="search-btn">🔍</button>
-        </form>
+      <form action="#" method="GET">
+        <input type="text" name="q" class="search-input" placeholder="Search parts...">
+        <button type="submit" class="search-btn">🔍</button>
+      </form>
     </div>
     <div class="auth">
-        <a href="cart.html" class="cart-link" style="color:white; margin-right:10px;">🛒 (<span id="cart-count">0</span>)</a>
-        <span class="user-greeting" style="color:white; margin-right:10px;">Hi, Demo User 👋</span>
-        <a href="#" class="btn login" onclick="event.preventDefault(); alert('Logged out (demo)')">Logout</a>
+      <a href="cart.html" class="cart-link" style="color:white; margin-right:10px;">🛒 (3)</a>
+      <a href="inbox.html" class="cart-link" style="margin-right:10px;">💬 Chats</a>
+      <a href="sell.html" class="btn sell">Sell</a>
+      <a href="admin.html" class="btn login" style="background:blue; margin-right:10px;">Dashboard</a>
+      <span class="user-greeting">Hi, Demo User</span>
+      <a href="#" class="btn login">Logout</a>
     </div>
-</div>
+  </div>
 
   <nav class="nav-category">
     <ul class="nav-links">
