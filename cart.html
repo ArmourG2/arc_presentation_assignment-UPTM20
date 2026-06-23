@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart - Mal Tech Store</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Cart-specific styles for presentation */
+    .cart-page { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    .cart-page h2 { text-align: center; margin-bottom: 1.5rem; color: #1f2937; }
+    
+    .cart-empty-box, .cart-items-box {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    .cart-empty-box { text-align: center; }
+    .cart-empty-box p { margin-bottom: 1.5rem; color: #6b7280; }
+    
+    .cart-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .cart-item-row:last-child { border-bottom: none; }
+    
+    .cart-item-details strong { display: block; color: #1f2937; margin-bottom: 4px; }
+    .cart-item-details small { color: #6b7280; }
+    
+    .cart-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .cart-item-subtotal {
+      font-weight: 600;
+      color: #10b981;
+      min-width: 80px;
+      text-align: right;
+    }
+    .cart-remove-link {
+      color: #ef4444;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .cart-remove-link:hover { color: #dc2626; text-decoration: underline; }
+    
+    .cart-total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 1.5rem 0;
+      border-top: 2px solid #e5e7eb;
+      margin-top: 1rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+    
+    .cart-btn-checkout, .cart-btn-clear, .cart-btn-continue {
+      display: inline-block;
+      padding: 12px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 500;
+      text-align: center;
+      margin-top: 1rem;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .cart-btn-checkout {
+      background: #10b981;
+      color: white;
+      width: 100%;
+    }
+    .cart-btn-checkout:hover { background: #059669; transform: translateY(-1px); }
+    
+    .cart-btn-clear {
+      background: #f3f4f6;
+      color: #374151;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .cart-btn-clear:hover { background: #e5e7eb; }
+    
+    .cart-btn-continue {
+      background: #3b82f6;
+      color: white;
+    }
+    .cart-btn-continue:hover { background: #2563eb; }
+    
+    /* Animation for item removal */
+    .cart-item-row.removing {
+      animation: slideOut 0.3s ease forwards;
+    }
+    @keyframes slideOut {
+      to { opacity: 0; transform: translateX(20px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER (Simplified - User Logged In) -->
+<div class="header-container">
+    <div class="logo"><a href="index.html">Mal Tech Store</a></div>
+    <div class="search-bar">
+        <form onsubmit="return false;">
+            <input type="text" id="search-input" class="search-input" placeholder="Search parts...">
+            <button type="submit" class="search-btn">🔍</button>
+        </form>
+    </div>
+    <div class="auth">
+        <a href="cart.html" class="cart-link" style="color:white; margin-right:10px;">🛒 (<span id="cart-count">3</span>)</a>
+        <span class="user-greeting" style="color:white; margin-right:10px;">Hi, Demo User 👋</span>
+        <a href="#" class="btn login" onclick="event.preventDefault(); alert('Logged out (demo)')">Logout</a>
+    </div>
+</div>
+
+<!-- NAVIGATION -->
+<nav class="nav-category">
+    <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="category.html" class="nav-link">Categories</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+    </ul>
+</nav>
+
+<!-- CART PAGE CONTENT -->
+<main class="cart-page">
+  <h2>Your Shopping Cart</h2>
+  
+  <!-- Cart Items (Mock Data - Replace PHP Loop) -->
+  <div class="cart-items-box" id="cart-items-container">
+    
+    <!-- Item 1 -->
+    <div class="cart-item-row" data-id="5">
+      <div class="cart-item-details">
+        <strong>RTX 3080 Gaming GPU</strong>
+        <br><small>x1 @ RM 1,500.00</small>
+      </div>
+      <div class="cart-item-actions">
+        <span class="cart-item-subtotal">RM 1,500.00</span>
+        <a href="#" class="cart-remove-link" onclick="removeItem(5, event)">Remove</a>
+      </div>
+    </div>
+    
+    <!-- Item 2 -->
+    <div class="cart-item-row" data-id="7">
+      <div class="cart-item-details">
+        <strong>Ryzen 7 5800X</strong>
+        <br><small>x1 @ RM 1,090.00</small>
+      </div>
+      <div class="cart-item-actions">
+        <span class="cart-item-subtotal">RM 1,090.00</span>
+        <a href="#" class="cart-remove-link" onclick="removeItem(7, event)">Remove</a>
+      </div>
+    </div>
+    
+    <!-- Item 3 -->
+    <div class="cart-item-row" data-id="4">
+      <div class="cart-item-details">
+        <strong>Samsung 970 EVO Plus 1TB</strong>
+        <br><small>x1 @ RM 310.00</small>
+      </div>
+      <div class="cart-item-actions">
+        <span class="cart-item-subtotal">RM 310.00</span>
+        <a href="#" class="cart-remove-link" onclick="removeItem(4, event)">Remove</a>
+      </div>
+    </div>
+    
+    <!-- Total Row -->
+    <div class="cart-total-row">
+      <span>Total</span>
+      <span id="cart-total">RM 2,900.00</span>
+    </div>
+    
+    <!-- Action Buttons -->
+    <a href="#" class="cart-btn-checkout">Proceed to Checkout</a>
+    <a href="#" class="cart-btn-clear" onclick="clearCart(event)">Clear Cart</a>
+  </div>
+  
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-column">
+            <h3>Mal Tech Store</h3>
+            <p>Preserve Tech with Love</p>
+        </div>
+        <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul class="footer-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="category.html">Products</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>Contact Us</h3>
+            <p>📧 support@maltech.my</p>
+            <p>🕐 Mon-Fri: 9AM-6PM</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> Mal Tech Store. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- JavaScript for Cart Interactivity -->
+<script>
+  // Mock cart state (replaces $_SESSION['cart'])
+  let cart = [
+    { id: 5, name: "RTX 3080 Gaming GPU", price: 1500.00, qty: 1 },
+    { id: 7, name: "Ryzen 7 5800X", price: 1090.00, qty: 1 },
+    { id: 4, name: "Samsung 970 EVO Plus 1TB", price: 310.00, qty: 1 }
+  ];
+
+  // Update cart count in header
+  function updateCartCount() {
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    document.getElementById('cart-count').textContent = count;
+  }
+
+  // Recalculate and display total
+  function updateTotal() {
+    const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    document.getElementById('cart-total').textContent = 'RM ' + total.toFixed(2);
+  }
+
+  // Remove item with animation
+  function removeItem(id, event) {
+    event.preventDefault();
+    
+    const row = document.querySelector(`.cart-item-row[data-id="${id}"]`);
+    if (!row) return;
+    
+    // Add removal animation
+    row.classList.add('removing');
+    
+    // Remove from JS array after animation
+    setTimeout(() => {
+      cart = cart.filter(item => item.id !== id);
+      row.remove();
+      updateCartCount();
+      updateTotal();
+      
+      // Show empty state if cart is empty
+      if (cart.length === 0) {
+        document.getElementById('cart-items-container').innerHTML = `
+          <div class="cart-empty-box">
+            <p>Your cart is empty.</p>
+            <a href="index.html" class="btn-login cart-btn-continue">Continue Shopping</a>
+          </div>
+        `;
+      }
+    }, 300);
+  }
+
+  // Clear entire cart
+  function clearCart(event) {
+    event.preventDefault();
+    if (!confirm('Clear all items from your cart?')) return;
+    
+    const container = document.getElementById('cart-items-container');
+    container.innerHTML = `
+      <div class="cart-empty-box">
+        <p>Your cart is empty.</p>
+        <a href="index.html" class="btn-login cart-btn-continue">Continue Shopping</a>
+      </div>
+    `;
+    cart = [];
+    updateCartCount();
+    updateTotal();
+  }
+
+  // Initialize on load
+  document.addEventListener('DOMContentLoaded', () => {
+    updateCartCount();
+    updateTotal();
+    document.getElementById('year').textContent = new Date().getFullYear();
+  });
+</script>
+
+</body>
+</html>

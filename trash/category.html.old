@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categories - Mal Tech Store</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <div class="header-container">
+    <div class="logo"><a href="index.html">Mal Tech Store</a></div>
+    <div class="search-bar">
+      <form action="#" method="GET">
+        <input type="text" name="q" class="search-input" placeholder="Search parts...">
+        <button type="submit" class="search-btn">🔍</button>
+      </form>
+    </div>
+    <div class="auth">
+      <a href="cart.html" class="cart-link" style="color:white; margin-right:10px;">🛒 (0)</a>
+      <a href="login.html" class="btn login">Login</a>
+      <a href="register.html" class="btn login">Register</a>
+    </div>
+  </div>
+
+  <nav class="nav-category">
+    <ul class="nav-links">
+      <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+      <li class="nav-item"><a href="category.html" class="nav-link">Categories</a></li>
+      <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+      <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="category-page">
+    <div class="section-header">
+      <h2>All Categories</h2>
+      <form class="category-filter-form" onsubmit="return false;">
+        <select name="category">
+          <option value="">All Categories</option>
+          <option value="gpu">Graphics Cards</option>
+          <option value="cpu">Processors</option>
+          <option value="ram">Memory</option>
+          <option value="storage">Storage</option>
+        </select>
+        <select name="sort">
+          <option value="newest">Newest First</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
+        </select>
+      </form>
+    </div>
+    <div class="products-container">
+      <!-- Mock Product 1 -->
+      <div class="product-card">
+        <a href="product.html?id=1">
+          <div class="product-image"><img src="images/placeholder.png" alt="RTX 4060"></div>
+          <div class="product-info">
+            <h3 class="product-title">RTX 4060 Gaming GPU</h3>
+            <p class="product-price">RM 1,299.00</p>
+            <a href="cart.html" class="btn-cart">Add to Cart</a>
+          </div>
+        </a>
+      </div>
+      <!-- Mock Product 2 -->
+      <div class="product-card">
+        <a href="product.html?id=2">
+          <div class="product-image"><img src="images/placeholder.png" alt="Ryzen 7 5800X"></div>
+          <div class="product-info">
+            <h3 class="product-title">AMD Ryzen 7 5800X</h3>
+            <p class="product-price">RM 899.00</p>
+            <a href="cart.html" class="btn-cart">Add to Cart</a>
+          </div>
+        </a>
+      </div>
+      <!-- Mock Product 3 -->
+      <div class="product-card">
+        <a href="product.html?id=3">
+          <div class="product-image"><img src="images/placeholder.png" alt="1TB NVMe SSD"></div>
+          <div class="product-info">
+            <h3 class="product-title">Samsung 980 PRO 1TB</h3>
+            <p class="product-price">RM 450.00</p>
+            <a href="cart.html" class="btn-cart">Add to Cart</a>
+          </div>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-column"><h3>Mal Tech Store</h3><p>Preserve Tech with Love</p></div>
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="category.html">Products</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Contact Us</h3>
+        <p>📧 support@maltech.my</p>
+        <p>🕐 Mon-Fri: 9AM-6PM</p>
+      </div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2024 Mal Tech Store. All rights reserved.</p></div>
+  </footer>
+</body>
+</html>

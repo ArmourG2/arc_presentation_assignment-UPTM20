@@ -1,0 +1,112 @@
+<?php
+require 'includes/functions.php';
+require_role('admin');
+
+// Handle Add/Edit/Delete
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action'])) {
+        if ($_POST['action'] === 'add') {
+            $name = trim($_POST['name']);
+            $slug = strtolower(trim($_POST['slug'] ?: preg_replace('/[^a-zA-Z0-9]+/', '-', $name)));
+            $stmt = $pdo->prepare("INSERT INTO categories (name, slug) VALUES (?, ?)");
+            $stmt->execute([$name, $slug]);
+            $message = "Category added!";
+        } elseif ($_POST['action'] === 'edit') {
+            $id = (int)$_POST['id'];
+            $name = trim($_POST['name']);
+            $slug = strtolower(trim($_POST['slug'] ?: preg_replace('/[^a-zA-Z0-9]+/', '-', $name)));
+            $stmt = $pdo->prepare("UPDATE categories SET name = ?, slug = ? WHERE id = ?");
+            $stmt->execute([$name, $slug, $id]);
+            $message = "Category updated!";
+        } elseif ($_POST['action'] === 'delete') {
+            $id = (int)$_POST['id'];
+            $stmt = $pdo->prepare("DELETE FROM categories WHERE id = ?");
+            $stmt->execute([$id]);
+            $message = "Category deleted!";
+        }
+    }
+}
+
+$categories = $pdo->query("SELECT c.*, COUNT(p.id) as product_count FROM categories c LEFT JOIN products p ON c.id = p.category_id GROUP BY c.id ORDER BY c.name")->fetchAll();
+$edit_category = null;
+if (isset($_GET['edit'])) {
+    $stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
+    $stmt->execute([$_GET['edit']]);
+    $edit_category = $stmt->fetch();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Categories - Mal Tech Store</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container { padding: 40px 20px; max-width: 800px; margin: 0 auto; }
+        .form-box { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .admin-table { width: 100%; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .admin-table th, .admin-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .admin-table th { background: #f8f9fa; }
+        .message { padding: 15px; background: #d4edda; color: #155724; border-radius: 5px; margin-bottom: 20px; }
+        .btn-small { padding: 5px 10px; font-size: 12px; margin-right: 5px; }
+    </style>
+</head>
+<body>
+    <?php include 'includes/header.php'; ?>
+    
+    <main class="admin-container">
+        <h1>Manage Categories</h1>
+        <p><a href="admin.php?tab=categories" style="color:#e2231a;">← Back to Dashboard</a></p>
+        
+        <?php if (isset($message)): ?><div class="message"><?= $message ?></div><?php endif; ?>
+        
+        <!-- Add/Edit Form -->
+        <div class="form-box">
+            <h2><?= $edit_category ? 'Edit' : 'Add' ?> Category</h2>
+            <form method="POST" action="">
+                <input type="hidden" name="action" value="<?= $edit_category ? 'edit' : 'add' ?>">
+                <?php if ($edit_category): ?><input type="hidden" name="id" value="<?= $edit_category['id'] ?>"><?php endif; ?>
+                
+                <div class="form-group">
+                    <label>Category Name *</label>
+                    <input type="text" name="name" required value="<?= sanitize($edit_category['name'] ?? '') ?>">
+                </div>
+                <div class="form-group">
+                    <label>Slug (URL-friendly)</label>
+                    <input type="text" name="slug" placeholder="auto-generated" value="<?= sanitize($edit_category['slug'] ?? '') ?>">
+                    <small style="color:#666;">Leave blank to auto-generate from name</small>
+                </div>
+                <button type="submit" class="btn-login"><?= $edit_category ? 'Update' : 'Add' ?> Category</button>
+                <?php if ($edit_category): ?><a href="admin-categories.php" style="margin-left:10px; color:#666;">Cancel</a><?php endif; ?>
+            </form>
+        </div>
+        
+        <!-- Categories List -->
+        <h2>All Categories</h2>
+        <table class="admin-table">
+            <thead><tr><th>ID</th><th>Name</th><th>Slug</th><th>Products</th><th>Actions</th></tr></thead>
+            <tbody>
+                <?php foreach ($categories as $cat): ?>
+                <tr>
+                    <td><?= $cat['id'] ?></td>
+                    <td><?= sanitize($cat['name']) ?></td>
+                    <td><?= sanitize($cat['slug']) ?></td>
+                    <td><?= $cat['product_count'] ?> products</td>
+                    <td>
+                        <a href="?edit=<?= $cat['id'] ?>" class="btn-action btn-approve btn-small">Edit</a>
+                        <form method="POST" style="display:inline;" onsubmit="return confirm('Delete this category? Products will be affected.');">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="<?= $cat['id'] ?>">
+                            <button type="submit" class="btn-action btn-reject btn-small">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </main>
+    
+    <?php include 'includes/footer.php'; ?>
+</body>
+</html>

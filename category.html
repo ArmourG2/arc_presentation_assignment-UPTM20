@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mal Tech Store - Browse Products</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* === CART POPUP MODAL STYLES === */
+
+</style>
+</head>
+<body>
+
+<!-- HEADER (Simplified - User Logged In) -->
+<div class="header-container">
+    <div class="logo"><a href="index.html">Judaism Tech Store</a></div>
+    <div class="search-bar">
+        <form onsubmit="return false;">
+            <input type="text" id="search-input" class="search-input" placeholder="Search parts...">
+            <button type="submit" class="search-btn">🔍</button>
+        </form>
+    </div>
+    <div class="auth">
+        <a href="cart.html" class="cart-link" style="color:white; margin-right:10px;">🛒 (<span id="cart-count">0</span>)</a>
+        <span class="user-greeting" style="color:white; margin-right:10px;">Hi, Demo User 👋</span>
+        <a href="#" class="btn login" onclick="event.preventDefault(); alert('Logged out (demo)')">Logout</a>
+    </div>
+</div>
+
+<!-- NAVIGATION -->
+<nav class="nav-category">
+    <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="category.html" class="nav-link">Categories</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+    </ul>
+</nav>
+
+<!-- MAIN CATEGORY/PRODUCT LISTING -->
+<main class="category-page">
+    <div class="section-header">
+        <h2 id="page-title">All Categories</h2>
+        <form id="filter-form" class="category-filter-form">
+            <select id="cat-select">
+                <option value="">All Categories</option>
+                <!-- JS will populate categories -->
+            </select>
+            <select id="sort-select">
+                <option value="newest">Newest First</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+            </select>
+        </form>
+    </div>
+
+    <div id="products-container" class="products-container">
+        <!-- JS injects product cards here -->
+    </div>
+</main>
+
+<!-- CART POPUP MODAL -->
+<div class="modal-overlay" id="cart-modal">
+  <div class="modal-content">
+    <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <h3 class="modal-title">Added to Cart! 🎉</h3>
+    <p class="modal-message">Your item has been successfully added.</p>
+    
+    <div class="modal-product-preview">
+      <img src="" alt="" class="modal-product-img" id="modal-img">
+      <div class="modal-product-info">
+        <h4 id="modal-name">Product Name</h4>
+        <p id="modal-price">RM 0.00</p>
+      </div>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" id="modal-continue">Continue Shopping</button>
+      <a href="cart.html" class="modal-btn modal-btn-primary" id="modal-view-cart">View Cart</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-column">
+            <h3>Mal Tech Store</h3>
+            <p>Preserve Tech with Love</p>
+        </div>
+        <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul class="footer-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="category.html">Products</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>Contact Us</h3>
+            <p>📧 support@maltech.my</p>
+            <p>🕐 Mon-Fri: 9AM-6PM</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> Mal Tech Store. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- JAVASCRIPT -->
+<script>
+    // 1. Mock Database
+    const productsData = [
+        { id: 1, name: "Kingston DDR5 16GB", price: 149.00, category_slug: "ram", image: "images/kingston_ddr5.jpg", created_at: "2026-05-20" },
+        { id: 2, name: "Lenovo Legion 7i", price: 6500, category_slug: "laptop", image: "images/lenovo laptop.png", created_at: "2026-05-15" },
+        { id: 3, name: "Keychron K2", price: 137.00, category_slug: "peripherals", image: "images/keychron-v2.jpg", created_at: "2026-05-22" },
+        { id: 4, name: "Samsung 970 EVO Plus 1TB", price: 310.00, category_slug: "drive", image: "images/Samsung 970 EVO Plus 1TB.jpg", created_at: "2026-05-10" },
+        { id: 5, name: "RTX 3080 Gaming GPU", price: 1500, category_slug: "gpu", image: "images/asus-rtx3080.jpg", created_at: "2026-05-25" },
+        { id: 6, name: "Custom PC", price: 3505.00, category_slug: "pc", image: "images/custompc.jpg", created_at: "2026-05-18" },
+        { id: 7, name: "Ryzen 7 5800X", price: 1090.00, category_slug: "cpu", image: "images/Ryzen 7 5800X.jpg", created_at: "2026-05-21" }
+    ];
+
+    const categoriesData = [
+        { slug: "peripherals", name: "Peripherals" },
+        { slug: "gpu", name: "Gpu" },
+        { slug: "drive", name: "Storage" },
+        { slug: "laptop", name: "Laptop"},
+        { slug: "ram", name: "Ram"},
+        { slug: "pc", name: "Computer"},
+        { slug: "cpu", name: "CPU"}
+    ];
+
+    // 2. DOM Elements
+    const catSelect = document.getElementById('cat-select');
+    const sortSelect = document.getElementById('sort-select');
+    const container = document.getElementById('products-container');
+    const pageTitle = document.getElementById('page-title');
+    const searchInput = document.getElementById('search-input');
+    const cartCountEl = document.getElementById('cart-count');
+    
+    // Modal Elements
+    const modal = document.getElementById('cart-modal');
+    const modalClose = document.getElementById('modal-close');
+    const modalContinue = document.getElementById('modal-continue');
+    const modalImg = document.getElementById('modal-img');
+    const modalName = document.getElementById('modal-name');
+    const modalPrice = document.getElementById('modal-price');
+
+    let searchQuery = '';
+    let cartCount = 0;
+
+    // 3. Render Logic
+    function renderProducts() {
+        const cat = catSelect.value;
+        const sort = sortSelect.value;
+
+        let filtered = productsData.filter(p => {
+            const matchesCategory = !cat || p.category_slug === cat;
+            const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesCategory && matchesSearch;
+        });
+
+        filtered.sort((a, b) => {
+            if (sort === 'price_asc') return a.price - b.price;
+            if (sort === 'price_desc') return b.price - a.price;
+            return new Date(b.created_at) - new Date(a.created_at);
+        });
+
+        container.innerHTML = '';
+        
+        if (searchQuery) {
+            pageTitle.textContent = `Search results for: "${searchQuery}"`;
+        } else {
+            pageTitle.textContent = cat ? `Browse: ${catSelect.selectedOptions[0].text}` : 'All Categories';
+        }
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<p class="no-products-msg">No products found matching your criteria.</p>';
+            return;
+        }
+
+        filtered.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <a href="product.html?id=${p.id}">
+                    <div class="product-image"><img src="${p.image}" alt="${p.name}"></div>
+                    <div class="product-info">
+                        <h3 class="product-title">${p.name}</h3>
+                        <p class="product-price">RM ${p.price.toFixed(2)}</p>
+                        <button class="btn-cart" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}">Add to Cart</button>
+                    </div>
+                </a>
+            `;
+            container.appendChild(card);
+        });
+
+        // Re-attach click listeners to new buttons
+        document.querySelectorAll('.btn-cart').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const product = {
+                    id: btn.dataset.id,
+                    name: btn.dataset.name,
+                    price: parseFloat(btn.dataset.price),
+                    image: btn.dataset.image
+                };
+                showCartPopup(product);
+            });
+        });
+    }
+
+    // 4. Show Beautiful Cart Popup
+    function showCartPopup(product) {
+        // Update modal content
+        modalImg.src = product.image;
+        modalImg.alt = product.name;
+        modalName.textContent = product.name;
+        modalPrice.textContent = `RM ${product.price.toFixed(2)}`;
+        
+        // Show modal with animation
+        modal.classList.add('active');
+        
+        // Update cart count
+        cartCount++;
+        cartCountEl.textContent = cartCount;
+        
+        // Save to localStorage (optional persistence)
+        let cart = JSON.parse(localStorage.getItem('maltech_cart') || '[]');
+        cart.push(product.id);
+        localStorage.setItem('maltech_cart', JSON.stringify(cart));
+    }
+
+    // 5. Hide Modal
+    function hideModal() {
+        modal.classList.remove('active');
+    }
+
+    // 6. URL Sync
+    function updateURL() {
+        const cat = catSelect.value;
+        const sort = sortSelect.value;
+        const params = new URLSearchParams();
+        if (cat) params.set('category', cat);
+        if (sort && sort !== 'newest') params.set('sort', sort);
+        if (searchQuery) params.set('q', searchQuery);
+        const newURL = `${window.location.pathname}?${params.toString()}`;
+        window.history.replaceState({}, '', newURL);
+    }
+
+    // 7. Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+        // Populate category dropdown
+        categoriesData.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.slug;
+            opt.textContent = c.name;
+            catSelect.appendChild(opt);
+        });
+
+        // Read URL params
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('category')) catSelect.value = params.get('category');
+        if (params.get('sort')) sortSelect.value = params.get('sort');
+        if (params.get('q')) {
+            searchQuery = params.get('q');
+            searchInput.value = searchQuery;
+        }
+
+        renderProducts();
+
+        // Event Listeners
+        catSelect.addEventListener('change', () => { updateURL(); renderProducts(); });
+        sortSelect.addEventListener('change', () => { updateURL(); renderProducts(); });
+        
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            updateURL();
+            renderProducts();
+        });
+
+        // Modal Controls
+        modalClose.addEventListener('click', hideModal);
+        modalContinue.addEventListener('click', hideModal);
+        
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) hideModal();
+        });
+        
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                hideModal();
+            }
+        });
+
+        // Footer year
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        // Load saved cart count
+        const savedCart = JSON.parse(localStorage.getItem('maltech_cart') || '[]');
+        cartCount = savedCart.length;
+        cartCountEl.textContent = cartCount;
+    });
+</script>
+</body>
+</html>
